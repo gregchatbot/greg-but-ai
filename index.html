@@ -56,7 +56,7 @@
         /* User Message Bubble - Right Justified */
         .user-message {
             width: fit-content;
-            max-width: 75%;
+            max-width: 85%;
             padding: 12px 18px;
             margin: 12px 0;
             background-color: #a5aeb5;
@@ -70,10 +70,10 @@
             align-self: flex-end;
         }
 
-        /* AI Response (Left Justified) */
+        /* AI Response (Left Justified, Allows Paragraphs) */
         .ai-message {
             width: 100%;
-            max-width: 75%;
+            max-width: 85%;
             padding: 10px 0;
             margin: 12px 0;
             color: #ffffff;
@@ -81,6 +81,7 @@
             display: block;
             word-wrap: break-word;
             align-self: flex-start;
+            white-space: pre-line;
         }
 
         /* Input Field */
@@ -155,7 +156,7 @@
                     let aiResponse = data.aiResponse || "Hmm, something went wrong. Operator error? That means you.";
                     let aiMessage = document.createElement('div');
                     aiMessage.classList.add('ai-message');
-                    aiMessage.innerHTML = `<strong>Greg, But AI:</strong> ` + aiResponse;
+                    aiMessage.innerHTML = `<strong>Greg, But AI:</strong> ` + aiResponse.replace(/\n/g, '<br>');
                     chatBox.appendChild(aiMessage);
                     chatBox.scrollTop = chatBox.scrollHeight;
                 })
