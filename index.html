@@ -49,39 +49,38 @@
             overflow-y: auto;
             padding: 10px;
             color: #ffffff;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* User Message Bubble */
+        /* User Message Bubble - Right Justified */
         .user-message {
             width: fit-content;
             max-width: 75%;
             padding: 12px 18px;
-            margin: 8px 0;
+            margin: 12px 0;
             background-color: #a5aeb5;
             color: #ffffff;
             font-size: 16px;
             border-radius: 15px;
             box-shadow: 6px 6px 12px #24282d, -6px -6px 12px #3a414b;
             border: 1.5px solid #a5aeb5;
-            display: inline-block;
             word-wrap: break-word;
             animation: bloop 0.3s ease-out;
+            align-self: flex-end;
         }
 
-        /* AI Response Bubble */
+        /* AI Response (Left Justified) */
         .ai-message {
-            width: fit-content;
+            width: 100%;
             max-width: 75%;
-            padding: 12px 18px;
-            margin: 8px 0;
-            background-color: #3a414b;
+            padding: 10px 0;
+            margin: 12px 0;
             color: #ffffff;
             font-size: 16px;
-            border-radius: 15px;
-            box-shadow: 6px 6px 12px #24282d, -6px -6px 12px #3a414b;
-            border: 1.5px solid #3a414b;
-            display: inline-block;
+            display: block;
             word-wrap: break-word;
+            align-self: flex-start;
         }
 
         /* Input Field */
@@ -110,19 +109,16 @@
     </style>
 </head>
 <body>
-    <!-- Header Image -->
     <div class="header-container">
         <img id="header-image" src="https://i.postimg.cc/66PS5Jvj/greg-but-ai-header-image-desktop.png" alt="Greg, But AI Header">
     </div>
 
-    <!-- Chat Box -->
     <div class="chat-container">
         <div class="chat-box" id="chat-box"></div>
         <input type="text" class="chat-input" id="chat-input" placeholder="Type a message...">
     </div>
 
     <script>
-        // Responsive Header Swap
         function updateHeaderImage() {
             const headerImg = document.getElementById('header-image');
             if (window.innerWidth <= 768) {
@@ -131,35 +127,25 @@
                 headerImg.src = "https://i.postimg.cc/66PS5Jvj/greg-but-ai-header-image-desktop.png";
             }
         }
-        window.onload = updateHeaderImage;
-        window.onresize = updateHeaderImage;
-
-        // Display Opening Message
-        window.onload = function() {
+        window.onload = function () {
+            updateHeaderImage();
             let chatBox = document.getElementById('chat-box');
-            let openingMessage = document.createElement('div');
-            openingMessage.classList.add('ai-message');
-            openingMessage.textContent = "What's good, youngblood? You need headlines? Big ideas? Or are we just gonna sit here swapping conspiracy theories about why no one's ever seen baby pigeons? Either way, I gotchu.";
-            chatBox.appendChild(openingMessage);
+            chatBox.innerHTML += `<div class="ai-message"><strong>Greg, But AI:</strong> What's good, youngblood? You need headlines? Big ideas? Or are we just gonna sit here swapping conspiracy theories about why no one's ever seen baby pigeons? Either way, I gotchu.</div>`;
         };
 
-        // Chat Functionality
+        window.onresize = updateHeaderImage;
+
         document.getElementById('chat-input').addEventListener('keypress', function(event) {
             if (event.key === 'Enter' && this.value.trim() !== '') {
                 let userMessage = this.value.trim();
                 let chatBox = document.getElementById('chat-box');
-
-                // Create user chat bubble with animation
                 let userBubble = document.createElement('div');
                 userBubble.classList.add('user-message');
                 userBubble.textContent = userMessage;
                 chatBox.appendChild(userBubble);
-
                 this.value = '';
                 chatBox.scrollTop = chatBox.scrollHeight;
-
-                // Fetch AI response securely from Vercel backend
-                fetch('/api/chat', {  
+                fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userMessage: userMessage })
@@ -167,20 +153,18 @@
                 .then(response => response.json())
                 .then(data => {
                     let aiResponse = data.aiResponse || "Hmm, something went wrong. Operator error? That means you.";
-
-                    let aiBubble = document.createElement('div');
-                    aiBubble.classList.add('ai-message');
-                    aiBubble.textContent = aiResponse;
-                    chatBox.appendChild(aiBubble);
-
+                    let aiMessage = document.createElement('div');
+                    aiMessage.classList.add('ai-message');
+                    aiMessage.innerHTML = `<strong>Greg, But AI:</strong> ` + aiResponse;
+                    chatBox.appendChild(aiMessage);
                     chatBox.scrollTop = chatBox.scrollHeight;
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    let aiBubble = document.createElement('div');
-                    aiBubble.classList.add('ai-message');
-                    aiBubble.textContent = "Ahhh HORSESHIT! I done fucked up. Let me know and I will fix it.";
-                    chatBox.appendChild(aiBubble);
+                    let aiMessage = document.createElement('div');
+                    aiMessage.classList.add('ai-message');
+                    aiMessage.innerHTML = `<strong>Greg, But AI:</strong> Ahhh HORSESHIT! I done messed up. Let me know and I will fix it.`;
+                    chatBox.appendChild(aiMessage);
                 });
             }
         });
