@@ -1,130 +1,189 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Greg, But AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        /* General Styles */
         body {
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            background: url('https://i.postimg.cc/pdSbrr66/Greg-Bot-Background-march.png') no-repeat center center fixed;
-            background-size: cover;
-            font-family: Arial, sans-serif;
+            background-color: #2e333a;
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+        /* Header Image */
+        .header-container img {
+            max-width: 100%;
+            height: auto;
         }
 
+        /* Chat Container */
         .chat-container {
-            position: relative;
-            width: 40%;
-            min-width: 350px;
+            width: 80%;
             max-width: 600px;
-            background: rgba(255, 255, 255, 0.9);
+            height: 450px;
+            border-radius: 30px;
+            background: #2e333a;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 50px -12px inset, 
+                        rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            position: relative;
+            margin-top: 20px;
         }
 
-        .chat-header {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
+        /* Chat Box */
         .chat-box {
-            width: 100%;
-            height: 300px;
+            flex-grow: 1;
             overflow-y: auto;
-            border: 1px solid #ccc;
             padding: 10px;
-            background: white;
+            color: #ffffff;
         }
 
+        /* User Message Bubble */
+        .user-message {
+            width: fit-content;
+            max-width: 75%;
+            padding: 12px 18px;
+            margin: 8px 0;
+            background-color: #a5aeb5;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 15px;
+            box-shadow: 6px 6px 12px #24282d, -6px -6px 12px #3a414b;
+            border: 1.5px solid #a5aeb5;
+            display: inline-block;
+            word-wrap: break-word;
+            animation: bloop 0.3s ease-out;
+        }
+
+        /* AI Response Bubble */
+        .ai-message {
+            width: fit-content;
+            max-width: 75%;
+            padding: 12px 18px;
+            margin: 8px 0;
+            background-color: #3a414b;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 15px;
+            box-shadow: 6px 6px 12px #24282d, -6px -6px 12px #3a414b;
+            border: 1.5px solid #3a414b;
+            display: inline-block;
+            word-wrap: break-word;
+        }
+
+        /* Input Field */
         .chat-input {
             width: calc(100% - 20px);
             padding: 10px;
             margin-top: 10px;
-            border: 1px solid #ccc;
+            border: none;
             border-radius: 5px;
+            background: #3a414b;
+            color: #ffffff;
+            font-size: 16px;
         }
 
-        .tagline {
-            position: absolute;
-            top: 10%;
-            width: 100%;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        /* Animation for User Message */
+        @keyframes bloop {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
-    <div class="tagline">Greg, But AI. Your Creative Bestie, 24/7.</div>
+    <!-- Header Image -->
+    <div class="header-container">
+        <img id="header-image" src="https://i.postimg.cc/66PS5Jvj/greg-but-ai-header-image-desktop.png" alt="Greg, But AI Header">
+    </div>
+
+    <!-- Chat Box -->
     <div class="chat-container">
-        <div class="chat-header">Chat with Greg, But AI</div>
         <div class="chat-box" id="chat-box"></div>
         <input type="text" class="chat-input" id="chat-input" placeholder="Type a message...">
     </div>
 
     <script>
+        // Responsive Header Swap
+        function updateHeaderImage() {
+            const headerImg = document.getElementById('header-image');
+            if (window.innerWidth <= 768) {
+                headerImg.src = "https://i.postimg.cc/JzV2ZNKj/greg-but-ai-header-image-mobile.png";
+            } else {
+                headerImg.src = "https://i.postimg.cc/66PS5Jvj/greg-but-ai-header-image-desktop.png";
+            }
+        }
+        window.onload = updateHeaderImage;
+        window.onresize = updateHeaderImage;
+
+        // Display Opening Message
         window.onload = function() {
             let chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML += `<div><strong>Greg, But AI:</strong> What's good, youngblood? You need headlines? Big ideas? Or are we just gonna sit here swapping conspiracy theories about why no one's ever seen baby pigeons? Either way, I gotchu.</div>`;
+            let openingMessage = document.createElement('div');
+            openingMessage.classList.add('ai-message');
+            openingMessage.textContent = "What's good, youngblood? You need headlines? Big ideas? Or are we just gonna sit here swapping conspiracy theories about why no one's ever seen baby pigeons? Either way, I gotchu.";
+            chatBox.appendChild(openingMessage);
         };
-        
+
+        // Chat Functionality
         document.getElementById('chat-input').addEventListener('keypress', function(event) {
             if (event.key === 'Enter' && this.value.trim() !== '') {
                 let userMessage = this.value.trim();
                 let chatBox = document.getElementById('chat-box');
-                chatBox.innerHTML += `<div><strong>You:</strong> ` + userMessage + `</div>`;
+
+                // Create user chat bubble with animation
+                let userBubble = document.createElement('div');
+                userBubble.classList.add('user-message');
+                userBubble.textContent = userMessage;
+                chatBox.appendChild(userBubble);
+
                 this.value = '';
-        
-                fetch('https://api.openai.com/v1/chat/completions', {
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // Fetch AI response securely from Vercel backend
+                fetch('/api/chat', {  
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer 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'
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-4',
-                        messages: [
-                            { "role": "system", "content": "You are Greg, But AI, a creative AI chatbot. Do not repeat the opening phrase in every response." },
-                            { "role": "user", "content": userMessage }
-                        ]
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userMessage: userMessage })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    let aiResponse = data.choices && data.choices.length > 0 ? data.choices[0].message.content : "Hmm, something went wrong. Operator error? That means you.";
-                    chatBox.innerHTML += `<div><strong>Greg, But AI:</strong> ` + aiResponse + `</div>`;
+                    let aiResponse = data.aiResponse || "Hmm, something went wrong. Operator error? That means you.";
+
+                    let aiBubble = document.createElement('div');
+                    aiBubble.classList.add('ai-message');
+                    aiBubble.textContent = aiResponse;
+                    chatBox.appendChild(aiBubble);
+
                     chatBox.scrollTop = chatBox.scrollHeight;
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    chatBox.innerHTML += `<div><strong>Greg, But AI:</strong> Ahhh HORSESHIT! I done fucked up. Let me know and I will fix it.</div>`;
+                    let aiBubble = document.createElement('div');
+                    aiBubble.classList.add('ai-message');
+                    aiBubble.textContent = "Ahhh HORSESHIT! I done fucked up. Let me know and I will fix it.";
+                    chatBox.appendChild(aiBubble);
                 });
             }
         });
-            </script>
-        </body>
-        </html>
-        
-
+    </script>
+</body>
+</html>
